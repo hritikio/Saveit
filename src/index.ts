@@ -227,7 +227,7 @@ app.post("/api/v1/brain/share", Auth, async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        msg: "content not found",
+        msg: "content not found for user",
       });
     }
 
@@ -247,7 +247,7 @@ app.post("/api/v1/brain/share", Auth, async (req, res) => {
 
     console.log("link is", link);
 
-    const createshare = shareModel.create({
+    const createshare = await shareModel.create({
       share: link,
       content: check_format.data.contentid,
       //@ts-ignore
@@ -268,6 +268,9 @@ app.post("/api/v1/brain/share", Auth, async (req, res) => {
   }
 });
 
+
+
+
 //generate a share string
 function sharestring(length: number) {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -281,6 +284,44 @@ function sharestring(length: number) {
 
 // const demo = sharestring(10);
 // console.log(demo);
+
+
+app.get("/api/v1/brain/:sharelink", async (req, res) => {
+  const sharelink = req.params.sharelink; 
+
+  try{
+    const sharedata=await shareModel.findOne({
+      share:sharelink
+    }).populate({path:"content"}).populate({
+        path:"creator",
+        select:"username"
+      })
+      console.log("sharedata is ",sharedata);
+    
+
+    if(!sharedata){
+      return res.status(403).json({
+        msg:"invalid link"
+      })}
+
+
+      res.json({
+        msg:"the shared content is ",
+        sharedata
+      })
+
+
+
+    }
+  
+  catch(err){
+    res.status(403).json({
+      msg:"Error occured ",
+      err
+    })
+  }
+});
+
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

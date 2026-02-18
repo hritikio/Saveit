@@ -7,9 +7,17 @@ import { contentModel, UserModel, shareModel } from "./db";
 import { z } from "zod";
 import * as bcrypt from "bcrypt";
 import { Auth } from "./Authenticate";
+import cors from "cors";
+
+
 
 const app = express();
 app.use(express.json());
+
+
+
+app.use(cors());
+
 
 app.post("/api/v1/signup", async (req, res) => {
   const check_correct_format = z.object({
@@ -55,7 +63,6 @@ app.post("/api/v1/signup", async (req, res) => {
     console.log("Error in creating user ", err);
     return res.status(501).json({
       msg: "Error in creating user",
-      err,
     });
   }
 });

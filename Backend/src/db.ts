@@ -1,9 +1,9 @@
 import mongoose, { model, Schema } from "mongoose";
 import { required } from "zod/mini";
 
-function isconnnected() {
+async function isconnnected() {
   try {
-    mongoose.connect(process.env.MONGO_URL as string);
+    await mongoose.connect(process.env.MONGO_URL as string);
     console.log("Connected to database successfully");
   } catch (err) {
     console.log("Error in connecting to database ", err);
@@ -29,6 +29,7 @@ const contentSchema = new Schema(
     link: String,
     tags: [{ type: String, ref: "Tag" }],
     userid: { type: Schema.Types.ObjectId, ref: "User" ,required:true},
+    type:String,
   },
   {
     timestamps: true,
